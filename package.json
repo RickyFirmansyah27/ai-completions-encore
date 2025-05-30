@@ -17,8 +17,11 @@
   "dependencies": {
     "@logtail/node": "^0.5.5",
     "@logtail/winston": "^0.5.5",
+    "@types/pg": "^8.15.2",
+    "dotenv": "^16.5.0",
     "encore.dev": "^1.47.3",
     "moment": "^2.30.1",
+    "pg": "^8.16.0",
     "winston": "^3.17.0"
   },
   "optionalDependencies": {
