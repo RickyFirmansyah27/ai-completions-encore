@@ -9,14 +9,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Tentukan path .env relatif ke file ini
-const envPath = path.resolve(__dirname, '../../.env');
+const envPath = path.resolve(__dirname, '../../../../.env');
 config({ path: envPath });
 
 
 
 const contextLogger = '[Neon DB - connection]';
 const DBPool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://postgres:eRTL8FSv8sjcfnJa@db.vmnckpncotptpfkkevzf.supabase.co:5432/postgres',
+    connectionString: process.env.DATABASE_URL,
     max: 5,
     ssl: process.env.DATABASE_URL?.includes('sslmode=require')
         ? { rejectUnauthorized: false }
