@@ -9,7 +9,7 @@ export const getGreeting = api(
     method: "GET", 
     path: "/hello/:name" 
   },
-  async ({ name }: { name: string }): Promise<Greeting> => {
+  async ({ name }: { name: string }) : Promise<ResponseData> => {
     return await GreetingController.getGreeting(name);
   }
 );

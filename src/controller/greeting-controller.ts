@@ -4,9 +4,14 @@ import { BaseResponse, Logger } from "../utils";
 import userService from "../service/user-service";
 
 export class GreetingController {
-  static async getGreeting(name: string): Promise<Greeting> {
+  static async getGreeting(name: string) {
     const message = GreetingService.generateGreeting(name);
-    return { message };
+    Logger.info(`Greeting generated for ${name}: ${message}`);
+    const result = {
+      greeting: message,
+      for: name,
+    }
+    return BaseResponse('Greeting fetched successfully', 'success',  result );
   }
 
   static async getUsersHandler() {
