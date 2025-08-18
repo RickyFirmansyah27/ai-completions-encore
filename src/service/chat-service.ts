@@ -14,7 +14,7 @@ export class ChatService {
       // Normalize messages to handle string inputs
       const normalizedRequest = this.normalizeMessages(request);
       
-      const provider = this.providerFactory.getProvider();
+      const provider = this.providerFactory.createProvider(request.provider);
       const completion = await provider.createCompletion(normalizedRequest);
 
       Logger.info(`ChatService | Chat completion created successfully`);
@@ -33,7 +33,7 @@ export class ChatService {
       // Normalize messages to handle string inputs
       const normalizedRequest = this.normalizeMessages(request);
       
-      const provider = this.providerFactory.getProvider();
+      const provider = this.providerFactory.createProvider(request.provider);
       const response = await provider.createStreamingCompletion(normalizedRequest);
 
       Logger.info(`ChatService | Streaming chat completion finished`);
@@ -68,7 +68,7 @@ export class ChatService {
       }
 
       // Validate that provider factory can create a valid provider
-      const provider = this.providerFactory.getProvider();
+      const provider = this.providerFactory.createProvider();
       if (!provider) {
         Logger.error('ChatService | No valid provider available');
         return false;

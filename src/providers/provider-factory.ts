@@ -20,12 +20,6 @@ export class ProviderFactory {
   }
 
     
-  getProvider(): IAIProvider {
-    if (!this.currentProvider) {
-      this.currentProvider = this.createGroqProvider();
-    }
-    return this.currentProvider;
-  }
 
     
   setProvider(provider: IAIProvider): void {
@@ -34,7 +28,11 @@ export class ProviderFactory {
   }
 
     
-  createProvider(providerName: string): IAIProvider {
+  createProvider(providerName?: string): IAIProvider {
+    if (!providerName) {
+      return this.createGroqProvider();
+    }
+
     switch (providerName.toLowerCase()) {
       case 'groq':
         return this.createGroqProvider();
@@ -43,7 +41,8 @@ export class ProviderFactory {
       case 'gemini':
         return this.createGeminiProvider();
       default:
-        throw new Error(`Unsupported provider: ${providerName}`);
+        Logger.warn(`Unsupported provider: ${providerName}. Defaulting to Groq.`);
+        return this.createGroqProvider();
     }
   }
 
@@ -85,7 +84,7 @@ export class ProviderFactory {
 
     
   validateCurrentProvider(): boolean {
-    const provider = this.getProvider();
+    const provider = this.createProvider();
     return provider.validateConfig();
   }
 
