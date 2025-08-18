@@ -7,23 +7,9 @@ export class ChatValidator {
    
   static validate(request: ChatCompletionRequest): ValidationResult {
     try {
-      // Validate messages exist and is array
-      if (!request.messages || !Array.isArray(request.messages) || request.messages.length === 0) {
-        return this.createError(AppConfig.ERRORS.INVALID_MESSAGES);
-      }
-
-      // Validate messages count
-      if (request.messages.length < AppConfig.VALIDATION.MIN_MESSAGES ||
-          request.messages.length > AppConfig.VALIDATION.MAX_MESSAGES) {
-        return this.createError(`Messages count must be between ${AppConfig.VALIDATION.MIN_MESSAGES} and ${AppConfig.VALIDATION.MAX_MESSAGES}`);
-      }
-
-      // Validate each message
-      for (const [index, message] of request.messages.entries()) {
-        const messageValidation = this.validateMessage(message as ChatMessage, index);
-        if (!messageValidation.isValid) {
-          return messageValidation;
-        }
+      // Validate prompt exists and is a non-empty string
+      if (!request.prompt || typeof request.prompt !== 'string' || request.prompt.trim().length === 0) {
+        return this.createError('Prompt is required and cannot be empty.');
       }
 
       // Validate optional parameters

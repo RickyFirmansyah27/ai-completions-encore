@@ -14,15 +14,12 @@ export class GroqProvider implements IAIProvider {
     });
   }
    
-  async createCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
+  async createCompletion(request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] }): Promise<ChatCompletionResponse> {
     try {
       Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || AppConfig.API.DEFAULT_MODEL}`);
       
-      // Convert MessageContent[] to proper format for Groq SDK
-      const formattedMessages = this.formatMessages(request.messages);
-      
       const completion = await this.client.chat.completions.create({
-        messages: formattedMessages,
+        messages: this.formatMessages(request.messages),
         model: request.model || AppConfig.API.DEFAULT_MODEL,
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
@@ -38,15 +35,12 @@ export class GroqProvider implements IAIProvider {
   }
 
    
-  async createStreamingCompletion(request: ChatCompletionRequest): Promise<string> {
+  async createStreamingCompletion(request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] }): Promise<string> {
     try {
       Logger.info(`${this.getProviderName()} | Creating streaming completion`);
       
-      // Convert MessageContent[] to proper format for Groq SDK
-      const formattedMessages = this.formatMessages(request.messages);
-      
       const stream = await this.client.chat.completions.create({
-        messages: formattedMessages,
+        messages: this.formatMessages(request.messages),
         model: request.model || AppConfig.API.DEFAULT_MODEL,
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,

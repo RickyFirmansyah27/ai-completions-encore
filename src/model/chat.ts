@@ -6,7 +6,7 @@ export interface ChatMessage {
 export type MessageContent = string | ChatMessage;
 
 export interface ChatCompletionRequest {
-  messages: MessageContent[];
+  prompt: string;
   model?: string;
   temperature?: number;
   max_tokens?: number;

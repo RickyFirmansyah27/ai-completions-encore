@@ -1,4 +1,4 @@
-import { ChatCompletionRequest, ChatCompletionResponse } from '../model/chat';
+import { ChatCompletionRequest, ChatCompletionResponse, ChatMessage } from '../model/chat';
 import { ProviderFactory } from '../providers/provider-factory';
 import { Logger } from '../utils/logger';
 import { AppConfig } from '../config/app-config';
@@ -11,11 +11,11 @@ export class ChatService {
     try {
       Logger.info(`ChatService | Creating chat completion with model: ${request.model || AppConfig.API.DEFAULT_MODEL}`);
       
-      // Normalize messages to handle string inputs
-      const normalizedRequest = this.normalizeMessages(request);
+      const messages: ChatMessage[] = [{ role: 'user', content: request.prompt }];
       
       const provider = this.providerFactory.createProvider(request.provider);
-      const completion = await provider.createCompletion(normalizedRequest);
+      const { prompt, ...rest } = request;
+      const completion = await provider.createCompletion({ ...rest, messages });
 
       Logger.info(`ChatService | Chat completion created successfully`);
       return completion;
@@ -30,11 +30,11 @@ export class ChatService {
     try {
       Logger.info(`ChatService | Creating streaming chat completion`);
       
-      // Normalize messages to handle string inputs
-      const normalizedRequest = this.normalizeMessages(request);
+      const messages: ChatMessage[] = [{ role: 'user', content: request.prompt }];
       
       const provider = this.providerFactory.createProvider(request.provider);
-      const response = await provider.createStreamingCompletion(normalizedRequest);
+      const { prompt: streamPrompt, ...streamRest } = request;
+      const response = await provider.createStreamingCompletion({ ...streamRest, messages });
 
       Logger.info(`ChatService | Streaming chat completion finished`);
       return response;
@@ -42,17 +42,6 @@ export class ChatService {
       Logger.error(`ChatService | Error creating streaming chat completion: ${(error as Error).message}`);
       throw error;
     }
-  }
-
-  private static normalizeMessages(request: ChatCompletionRequest): ChatCompletionRequest {
-    return {
-      ...request,
-      messages: request.messages.map(message =>
-        typeof message === 'string'
-          ? { role: AppConfig.API.DEFAULT_ROLE, content: message }
-          : message
-      )
-    };
   }
 
   static validateConfiguration(): boolean {
