@@ -1,7 +1,6 @@
 import { api } from "encore.dev/api";
 import { GreetingController } from "../controller/greeting-controller";
 import { ChatController } from "../controller/chat-controller";
-import { Greeting } from "../model/greeting";
 import { ChatCompletionRequest } from "../model/chat";
 import { ResponseData } from "../utils/base-response";
 
@@ -15,7 +14,6 @@ export const getGreeting = api(
     return await GreetingController.getGreeting(name);
   }
 );
-
 
 export const getUser = api(
   { 

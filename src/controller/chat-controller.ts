@@ -26,6 +26,15 @@ export class ChatController {
         }
       }
 
+      if (request.stream) {
+        Logger.info('Chat Controller | Processing streaming request');
+        const streamResponse = await ChatService.createStreamingCompletion(request);
+    
+        
+        Logger.info(`Chat Controller | Streaming completion successful`);
+        return BaseResponse('Streaming chat completion created successfully', 'success', streamResponse);
+      }
+
       const completion = await ChatService.createChatCompletion(request);
       
       Logger.info(`Chat Controller | Chat completion successful`);
