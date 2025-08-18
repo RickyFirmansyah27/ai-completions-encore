@@ -1,29 +1,33 @@
-import Groq from 'groq-sdk';
+import OpenAI from 'openai';
 import { IAIProvider } from './ai-provider.interface';
 import { ChatCompletionRequest, ChatCompletionResponse, MessageContent } from '../model/chat';
 import { AppConfig } from '../config/app-config';
 import { Logger } from '../utils/logger';
 
- 
-export class GroqProvider implements IAIProvider {
-  private client: Groq;
+export class OpenRouterProvider implements IAIProvider {
+  private client: OpenAI;
 
   constructor() {
-    this.client = new Groq({ 
-      apiKey: AppConfig.API.GROQ_API_KEY 
+    this.client = new OpenAI({
+      apiKey: AppConfig.API.OPENROUTER_API_KEY,
+      baseURL: 'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://your-app.com', // Replace with your actual app URL
+        'X-Title': 'Simple REST Encore TypeScript', // Replace with your actual app name
+      },
     });
   }
-   
+
   async createCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     try {
-      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || AppConfig.API.DEFAULT_MODEL}`);
+      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || 'moonshotai/kimi-k2:free'}`);
       
-      // Convert MessageContent[] to proper format for Groq SDK
+      // Convert MessageContent[] to proper format for OpenAI SDK
       const formattedMessages = this.formatMessages(request.messages);
       
       const completion = await this.client.chat.completions.create({
         messages: formattedMessages,
-        model: request.model || AppConfig.API.DEFAULT_MODEL,
+        model: request.model || 'moonshotai/kimi-k2:free',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: request.stream,
@@ -37,17 +41,16 @@ export class GroqProvider implements IAIProvider {
     }
   }
 
-   
   async createStreamingCompletion(request: ChatCompletionRequest): Promise<string> {
     try {
       Logger.info(`${this.getProviderName()} | Creating streaming completion`);
       
-      // Convert MessageContent[] to proper format for Groq SDK
+      // Convert MessageContent[] to proper format for OpenAI SDK
       const formattedMessages = this.formatMessages(request.messages);
       
       const stream = await this.client.chat.completions.create({
         messages: formattedMessages,
-        model: request.model || AppConfig.API.DEFAULT_MODEL,
+        model: request.model || 'moonshotai/kimi-k2:free',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: true,
@@ -67,14 +70,12 @@ export class GroqProvider implements IAIProvider {
     }
   }
 
-   
   validateConfig(): boolean {
-    return !!AppConfig.API.GROQ_API_KEY;
+    return !!AppConfig.API.OPENROUTER_API_KEY;
   }
 
-   
   getProviderName(): string {
-    return 'GroqProvider';
+    return 'OpenRouterProvider';
   }
 
   private formatMessages(messages: MessageContent[]): { role: 'system' | 'user' | 'assistant'; content: string }[] {
@@ -86,7 +87,6 @@ export class GroqProvider implements IAIProvider {
     });
   }
 
-   
   private handleError(error: unknown): Error {
     if (error instanceof Error) {
       if (error.message.includes('API key')) {

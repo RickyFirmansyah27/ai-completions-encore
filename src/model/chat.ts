@@ -3,12 +3,15 @@ export interface ChatMessage {
   content: string;
 }
 
+export type MessageContent = string | ChatMessage;
+
 export interface ChatCompletionRequest {
-  messages: ChatMessage[];
+  messages: MessageContent[];
   model?: string;
   temperature?: number;
   max_tokens?: number;
   stream?: boolean;
+  provider?: 'groq' | 'openrouter' | 'gemini';
 }
 
 export interface ChatCompletionResponse {

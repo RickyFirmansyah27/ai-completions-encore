@@ -13,14 +13,14 @@ export class ChatValidator {
       }
 
       // Validate messages count
-      if (request.messages.length < AppConfig.VALIDATION.MIN_MESSAGES || 
+      if (request.messages.length < AppConfig.VALIDATION.MIN_MESSAGES ||
           request.messages.length > AppConfig.VALIDATION.MAX_MESSAGES) {
         return this.createError(`Messages count must be between ${AppConfig.VALIDATION.MIN_MESSAGES} and ${AppConfig.VALIDATION.MAX_MESSAGES}`);
       }
 
       // Validate each message
       for (const [index, message] of request.messages.entries()) {
-        const messageValidation = this.validateMessage(message, index);
+        const messageValidation = this.validateMessage(message as ChatMessage, index);
         if (!messageValidation.isValid) {
           return messageValidation;
         }

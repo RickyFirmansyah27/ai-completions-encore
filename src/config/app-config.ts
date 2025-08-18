@@ -5,16 +5,19 @@ export class AppConfig {
   // API Configuration
   static readonly API = {
     GROQ_API_KEY: EnvLoader.get('GROQ_API_KEY'),
-    DEFAULT_MODEL: EnvLoader.get('DEFAULT_MODEL', 'llama3-8b-8192'),
+    OPENROUTER_API_KEY: EnvLoader.get('OPENROUTER_API_KEY'),
+    GEMINI_API_KEY: EnvLoader.get('GEMINI_API_KEY'),
+    DEFAULT_MODEL: EnvLoader.get('DEFAULT_MODEL', 'openai/gpt-oss-120b'),
     DEFAULT_TEMPERATURE: parseFloat(EnvLoader.get('DEFAULT_TEMPERATURE', '0.7')),
     DEFAULT_MAX_TOKENS: parseInt(EnvLoader.get('DEFAULT_MAX_TOKENS', '4000'), 10),
+    DEFAULT_ROLE: EnvLoader.get('DEFAULT_ROLE', 'user') as 'user' | 'assistant' | 'system',
   } as const;
 
   // Validation Rules
   static readonly VALIDATION = {
-    ALLOWED_ROLES: ['system', 'user', 'assistant'] as const,
+    ALLOWED_ROLES: ['user', 'system', 'assistant'] as const,
     MIN_MESSAGES: 1,
-    MAX_MESSAGES: 100,
+    MAX_MESSAGES: 20,
     MIN_TEMPERATURE: 0,
     MAX_TEMPERATURE: 2,
     MIN_MAX_TOKENS: 1,
@@ -23,7 +26,7 @@ export class AppConfig {
 
   // Error Messages
   static readonly ERRORS = {
-    MISSING_API_KEY: 'GROQ_API_KEY environment variable is required',
+    MISSING_API_KEY: 'Environment variable is required',
     INVALID_MESSAGES: 'Messages are required and must be an array',
     INVALID_MESSAGE_FORMAT: 'Each message must have role and content',
     INVALID_ROLE: 'Invalid message role. Must be system, user, or assistant',
@@ -41,7 +44,7 @@ export class AppConfig {
 
    
   static validate(): void {
-    if (!this.API.GROQ_API_KEY) {
+    if (!this.API.GROQ_API_KEY && !this.API.OPENROUTER_API_KEY && !this.API.GEMINI_API_KEY) {
       throw new Error(this.ERRORS.MISSING_API_KEY);
     }
   }
