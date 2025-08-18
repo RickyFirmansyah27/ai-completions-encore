@@ -7,7 +7,9 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "dev": "encore run"
+    "dev": "encore run",
+    "clean:comments": "node scripts/remove-comments.cjs",
+    "clean:comments:src": "node scripts/remove-comments.cjs ./src"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",

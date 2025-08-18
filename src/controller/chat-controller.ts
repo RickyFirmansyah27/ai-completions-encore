@@ -1,62 +1,62 @@
 import { ChatService } from '../service/chat-service';
 import { ChatCompletionRequest } from '../model/chat';
 import { BaseResponse, Logger } from '../utils';
+import { ChatValidator } from '../validators/chat-validator';
+import { AppConfig } from '../config/app-config';
 
+ 
 export class ChatController {
+   
   static async createChatCompletion(request: ChatCompletionRequest) {
     try {
-      Logger.info(`Chat Controller | Processing chat completion request`);
+      Logger.info(`ChatController | Processing chat completion request`);
       
-      // Validasi input
-      if (!request.messages || request.messages.length === 0) {
-        Logger.warn('Chat Controller | No messages provided');
-        return BaseResponse('Messages are required', 'badRequest');
+      // Validate request
+      const validation = ChatValidator.validate(request);
+      if (!validation.isValid) {
+        Logger.warn(`ChatController | Validation failed: ${validation.error}`);
+        return BaseResponse(validation.error!, 'badRequest');
       }
 
-      // Validasi format messages
-      for (const message of request.messages) {
-        if (!message.role || !message.content) {
-          Logger.warn('Chat Controller | Invalid message format');
-          return BaseResponse('Each message must have role and content', 'badRequest');
-        }
-        
-        if (!['system', 'user', 'assistant'].includes(message.role)) {
-          Logger.warn(`Chat Controller | Invalid role: ${message.role}`);
-          return BaseResponse('Invalid message role. Must be system, user, or assistant', 'badRequest');
-        }
-      }
-
+      // Handle streaming request
       if (request.stream) {
-        Logger.info('Chat Controller | Processing streaming request');
+        Logger.info('ChatController | Processing streaming request');
         const streamResponse = await ChatService.createStreamingCompletion(request);
-    
         
-        Logger.info(`Chat Controller | Streaming completion successful`);
-        return BaseResponse('Streaming chat completion created successfully', 'success', streamResponse);
+        Logger.info(`ChatController | Streaming completion successful`);
+        return BaseResponse(AppConfig.SUCCESS.STREAMING_COMPLETION, 'success', { content: streamResponse });
       }
 
+      // Handle regular request
       const completion = await ChatService.createChatCompletion(request);
       
-      Logger.info(`Chat Controller | Chat completion successful`);
-      return BaseResponse('Chat completion created successfully', 'success', completion);
+      Logger.info(`ChatController | Chat completion successful`);
+      return BaseResponse(AppConfig.SUCCESS.CHAT_COMPLETION, 'success', completion);
       
     } catch (error) {
-      Logger.error(`Chat Controller | Error: ${(error as Error).message}`);
-      
-      // Handle specific Groq API errors
-      if (error instanceof Error) {
-        if (error.message.includes('API key')) {
-          return BaseResponse('Invalid or missing API key', 'unauthorized');
-        }
-        if (error.message.includes('rate limit')) {
-          return BaseResponse('Rate limit exceeded', 'tooManyRequests');
-        }
-        if (error.message.includes('quota')) {
-          return BaseResponse('API quota exceeded', 'paymentRequired');
-        }
-      }
-      
-      return BaseResponse('Failed to create chat completion', 'internalServerError');
+      return this.handleError(error);
     }
+  }
+
+   
+  private static handleError(error: unknown) {
+    const errorMessage = (error as Error).message;
+    Logger.error(`ChatController | Error: ${errorMessage}`);
+    
+    // Handle specific errors based on message content
+    if (errorMessage.includes('API key') || errorMessage === AppConfig.ERRORS.UNAUTHORIZED) {
+      return BaseResponse(AppConfig.ERRORS.UNAUTHORIZED, 'unauthorized');
+    }
+    
+    if (errorMessage.includes('rate limit') || errorMessage === AppConfig.ERRORS.RATE_LIMIT) {
+      return BaseResponse(AppConfig.ERRORS.RATE_LIMIT, 'tooManyRequests');
+    }
+    
+    if (errorMessage.includes('quota') || errorMessage === AppConfig.ERRORS.QUOTA_EXCEEDED) {
+      return BaseResponse(AppConfig.ERRORS.QUOTA_EXCEEDED, 'paymentRequired');
+    }
+    
+    // Default error response
+    return BaseResponse(AppConfig.ERRORS.INTERNAL_ERROR, 'internalServerError');
   }
 }

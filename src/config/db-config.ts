@@ -23,9 +23,7 @@ const DBPool = new Pool({
         : undefined,
 });
 
-/**
- * Function to test database connection
- */
+ 
 export const DBConnection = async (): Promise<void> => {
   try {
     const client = await DBPool.connect();
@@ -45,9 +43,7 @@ export const DBConnection = async (): Promise<void> => {
   }
 };
 
-/**
- * Execute SQL with parameters
- */
+ 
 export const commandWithParams = async (
   sql: string,
   params: any[] = [],
@@ -68,9 +64,7 @@ export const commandWithParams = async (
   }
 };
 
-/**
- * Execute SQL query
- */
+ 
 export const executeSQLQuery = async (
   sql: string,
   params: any[] = [],
@@ -78,9 +72,7 @@ export const executeSQLQuery = async (
   return commandWithParams(sql, params);
 };
 
-/**
- * Start a database transaction
- */
+ 
 export const startTransaction = async (): Promise<PoolClient> => {
   const connection = await DBPool.connect();
   try {
@@ -97,9 +89,7 @@ export const startTransaction = async (): Promise<PoolClient> => {
   }
 };
 
-/**
- * Execute SQL within a transaction
- */
+ 
 export const executeSQLTransaction = async (
   connection: PoolClient,
   sql: string,
@@ -118,9 +108,7 @@ export const executeSQLTransaction = async (
   }
 };
 
-/**
- * Rollback a transaction
- */
+ 
 export const rollbackTransaction = async (
   connection: PoolClient,
 ): Promise<void> => {
@@ -131,9 +119,7 @@ export const rollbackTransaction = async (
   }
 };
 
-/**
- * Commit a transaction
- */
+ 
 export const commitTransaction = async (
   connection: PoolClient,
 ): Promise<void> => {
