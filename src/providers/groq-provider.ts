@@ -10,17 +10,21 @@ export class GroqProvider implements IAIProvider {
 
   constructor() {
     this.client = new Groq({ 
-      apiKey: AppConfig.API.GROQ_API_KEY 
+      apiKey: AppConfig.API.GROQ_API_KEY,
+      defaultHeaders: {
+        'HTTP-Referer': 'https://imaginary.site', // Replace with your actual app URL
+        'X-Title': 'Imaginary AI', // Replace with your actual app name
+      },
     });
   }
    
   async createCompletion(request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] }): Promise<ChatCompletionResponse> {
     try {
-      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || AppConfig.API.DEFAULT_MODEL}`);
+      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model}`);
       
       const completion = await this.client.chat.completions.create({
         messages: this.formatMessages(request.messages),
-        model: request.model || AppConfig.API.DEFAULT_MODEL,
+        model: request.model ||'openai/gpt-oss-120b',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: request.stream,
@@ -41,7 +45,7 @@ export class GroqProvider implements IAIProvider {
       
       const stream = await this.client.chat.completions.create({
         messages: this.formatMessages(request.messages),
-        model: request.model || AppConfig.API.DEFAULT_MODEL,
+        model: request.model || 'openai/gpt-oss-120b',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: true,

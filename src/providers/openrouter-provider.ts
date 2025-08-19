@@ -12,8 +12,8 @@ export class OpenRouterProvider implements IAIProvider {
       apiKey: AppConfig.API.OPENROUTER_API_KEY,
       baseURL: 'https://openrouter.ai/api/v1',
       defaultHeaders: {
-        'HTTP-Referer': 'https://your-app.com', // Replace with your actual app URL
-        'X-Title': 'Simple REST Encore TypeScript', // Replace with your actual app name
+        'HTTP-Referer': 'https://imaginary.site', // Replace with your actual app URL
+        'X-Title': 'Imaginary AI', // Replace with your actual app name
       },
     });
   }

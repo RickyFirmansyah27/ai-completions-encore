@@ -9,7 +9,7 @@ config();
 console.log('🔍 Environment Variable Test');
 console.log('============================');
 console.log(`GROQ_API_KEY: ${process.env.GROQ_API_KEY ? '✅ Found' : '❌ Not found'}`);
-console.log(`DEFAULT_MODEL: ${process.env.DEFAULT_MODEL || 'Not set'}`);
+
 console.log(`LOG_LEVEL: ${process.env.LOG_LEVEL || 'Not set'}`);
 console.log('============================');
 

@@ -7,10 +7,10 @@ export class AppConfig {
     GROQ_API_KEY: EnvLoader.get('GROQ_API_KEY'),
     OPENROUTER_API_KEY: EnvLoader.get('OPENROUTER_API_KEY'),
     GEMINI_API_KEY: EnvLoader.get('GEMINI_API_KEY'),
-    DEFAULT_MODEL: EnvLoader.get('DEFAULT_MODEL', 'openai/gpt-oss-120b'),
+
     DEFAULT_TEMPERATURE: parseFloat(EnvLoader.get('DEFAULT_TEMPERATURE', '0.7')),
     DEFAULT_MAX_TOKENS: parseInt(EnvLoader.get('DEFAULT_MAX_TOKENS', '4000'), 10),
-    DEFAULT_ROLE: EnvLoader.get('DEFAULT_ROLE', 'user') as 'user' | 'assistant' | 'system',
+    DEFAULT_ROLE: 'user' as 'user' | 'assistant' | 'system',
   } as const;
 
   // Validation Rules

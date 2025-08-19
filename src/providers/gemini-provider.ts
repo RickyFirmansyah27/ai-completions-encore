@@ -11,6 +11,10 @@ export class GeminiProvider implements IAIProvider {
     this.client = new OpenAI({
       apiKey: AppConfig.API.GEMINI_API_KEY,
       baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://imaginary.site', // Replace with your actual app URL
+        'X-Title': 'Imaginary AI', // Replace with your actual app name
+      },
     });
   }
 

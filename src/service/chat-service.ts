@@ -9,7 +9,7 @@ export class ChatService {
 
   static async createChatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     try {
-      Logger.info(`ChatService | Creating chat completion with model: ${request.model || AppConfig.API.DEFAULT_MODEL}`);
+      Logger.info(`ChatService | Creating chat completion with model: ${request.model}`);
       
       const messages: ChatMessage[] = [{ role: 'user', content: request.prompt }];
       
