@@ -36,7 +36,8 @@ export class ChatService {
       const { prompt: streamPrompt, ...streamRest } = request;
       const response = await provider.createStreamingCompletion({ ...streamRest, messages });
 
-      Logger.info(`ChatService | Streaming chat completion finished`);
+      Logger.info(`ChatService | Streaming chat completion finished. Response length: ${response.length}`);
+      Logger.debug(`ChatService | Streaming chat completion response: "${response}"`);
       return response;
     } catch (error) {
       Logger.error(`ChatService | Error creating streaming chat completion: ${(error as Error).message}`);

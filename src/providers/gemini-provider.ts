@@ -20,11 +20,11 @@ export class GeminiProvider implements IAIProvider {
 
   async createCompletion(request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] }): Promise<ChatCompletionResponse> {
     try {
-      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || 'gemini-2.5-pro'}`);
+      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || 'gemini-2.0-flash-exp'}`);
       
       const completion = await this.client.chat.completions.create({
         messages: this.formatMessages(request.messages),
-        model: request.model || 'gemini-2.5-pro',
+        model: request.model || 'gemini-2.0-flash-exp',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: request.stream,
@@ -44,19 +44,31 @@ export class GeminiProvider implements IAIProvider {
       
       const stream = await this.client.chat.completions.create({
         messages: this.formatMessages(request.messages),
-        model: request.model || 'gemini-2.5-pro',
+        model: request.model || 'gemini-2.0-flash-exp',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: true,
       });
 
+      Logger.info(`${this.getProviderName()} | Stream object received`);
+
       let fullResponse = '';
+      
       for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || '';
-        fullResponse += content;
+        if (chunk.choices && chunk.choices.length > 0) {
+          const choice = chunk.choices[0];
+          
+          // Extract content from delta
+          let content = '';
+          if (choice.delta && choice.delta.content !== undefined && choice.delta.content !== null) {
+            content = choice.delta.content;
+          }
+          
+          fullResponse += content;
+        }
       }
 
-      Logger.info(`${this.getProviderName()} | Streaming completion finished`);
+      Logger.info(`${this.getProviderName()} | Streaming completion finished. Final response length: ${fullResponse.length}`);
       return fullResponse;
     } catch (error) {
       Logger.error(`${this.getProviderName()} | Error creating streaming completion: ${(error as Error).message}`);
@@ -73,7 +85,7 @@ export class GeminiProvider implements IAIProvider {
       
       const stream = await this.client.chat.completions.create({
         messages: this.formatMessages(request.messages),
-        model: request.model || 'gemini-2.5-pro',
+        model: request.model || 'gemini-2.0-flash-exp',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: true,
