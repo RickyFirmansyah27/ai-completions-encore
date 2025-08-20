@@ -2,6 +2,7 @@ import { IAIProvider } from './ai-provider.interface';
 import { GroqProvider } from './groq-provider';
 import { OpenRouterProvider } from './openrouter-provider';
 import { GeminiProvider } from './gemini-provider';
+import { AtlasProvider } from './atlas-provider';
 import { Logger } from '../utils/logger';
 
  
@@ -40,6 +41,8 @@ export class ProviderFactory {
         return this.createOpenRouterProvider();
       case 'gemini':
         return this.createGeminiProvider();
+      case 'atlas':
+        return this.createAtlasProvider();
       default:
         Logger.warn(`Unsupported provider: ${providerName}. Defaulting to Groq.`);
         return this.createGroqProvider();
@@ -83,6 +86,18 @@ export class ProviderFactory {
   }
 
     
+  private createAtlasProvider(): IAIProvider {
+    const provider = new AtlasProvider();
+    
+    if (!provider.validateConfig()) {
+      throw new Error('Atlas provider configuration is invalid');
+    }
+    
+    Logger.info(`ProviderFactory | Created provider: ${provider.getProviderName()}`);
+    return provider;
+  }
+
+    
   validateCurrentProvider(): boolean {
     const provider = this.createProvider();
     return provider.validateConfig();
@@ -90,6 +105,6 @@ export class ProviderFactory {
 
     
   getAvailableProviders(): string[] {
-    return ['groq', 'openrouter', 'gemini'];
+    return ['groq', 'openrouter', 'gemini', 'atlas'];
   }
 }
