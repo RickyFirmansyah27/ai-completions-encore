@@ -10,7 +10,7 @@ export class GeminiProvider implements IAIProvider {
   constructor() {
     this.client = new OpenAI({
       apiKey: AppConfig.API.GEMINI_API_KEY,
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+      baseURL: 'https://generativelanguage.googleapis.com/v1beta',
       defaultHeaders: {
         'HTTP-Referer': 'https://imaginary.site', // Replace with your actual app URL
         'X-Title': 'Imaginary AI', // Replace with your actual app name
@@ -60,6 +60,35 @@ export class GeminiProvider implements IAIProvider {
       return fullResponse;
     } catch (error) {
       Logger.error(`${this.getProviderName()} | Error creating streaming completion: ${(error as Error).message}`);
+      throw this.handleError(error);
+    }
+  }
+
+  async createStreamingResponse(
+    request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] },
+    onChunk: (chunk: string) => void
+  ): Promise<void> {
+    try {
+      Logger.info(`${this.getProviderName()} | Creating streaming response`);
+      
+      const stream = await this.client.chat.completions.create({
+        messages: this.formatMessages(request.messages),
+        model: request.model || 'gemini-2.5-pro',
+        temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
+        max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
+        stream: true,
+      });
+
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) {
+          onChunk(content);
+        }
+      }
+
+      Logger.info(`${this.getProviderName()} | Streaming response finished`);
+    } catch (error) {
+      Logger.error(`${this.getProviderName()} | Error creating streaming response: ${(error as Error).message}`);
       throw this.handleError(error);
     }
   }

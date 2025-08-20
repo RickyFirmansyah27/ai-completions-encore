@@ -65,7 +65,35 @@ export class GroqProvider implements IAIProvider {
     }
   }
 
-   
+  async createStreamingResponse(
+    request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] },
+    onChunk: (chunk: string) => void
+  ): Promise<void> {
+    try {
+      Logger.info(`${this.getProviderName()} | Creating streaming response`);
+      
+      const stream = await this.client.chat.completions.create({
+        messages: this.formatMessages(request.messages),
+        model: request.model || 'openai/gpt-oss-120b',
+        temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
+        max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
+        stream: true,
+      });
+
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) {
+          onChunk(content);
+        }
+      }
+
+      Logger.info(`${this.getProviderName()} | Streaming response finished`);
+    } catch (error) {
+      Logger.error(`${this.getProviderName()} | Error creating streaming response: ${(error as Error).message}`);
+      throw this.handleError(error);
+    }
+  }
+
   validateConfig(): boolean {
     return !!AppConfig.API.GROQ_API_KEY;
   }

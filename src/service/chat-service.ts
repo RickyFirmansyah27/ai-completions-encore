@@ -1,4 +1,4 @@
-import { ChatCompletionRequest, ChatCompletionResponse, ChatMessage } from '../model/chat';
+import { ChatCompletionRequest, ChatCompletionResponse, MessageContent } from '../model/chat';
 import { ProviderFactory } from '../providers/provider-factory';
 import { Logger } from '../utils/logger';
 import { AppConfig } from '../config/app-config';
@@ -11,7 +11,7 @@ export class ChatService {
     try {
       Logger.info(`ChatService | Creating chat completion with model: ${request.model}`);
       
-      const messages: ChatMessage[] = [{ role: 'user', content: request.prompt }];
+      const messages: MessageContent[] = [{ role: 'user', content: request.prompt }];
       
       const provider = this.providerFactory.createProvider(request.provider);
       const { prompt, ...rest } = request;
@@ -30,7 +30,7 @@ export class ChatService {
     try {
       Logger.info(`ChatService | Creating streaming chat completion`);
       
-      const messages: ChatMessage[] = [{ role: 'user', content: request.prompt }];
+      const messages: MessageContent[] = [{ role: 'user', content: request.prompt }];
       
       const provider = this.providerFactory.createProvider(request.provider);
       const { prompt: streamPrompt, ...streamRest } = request;
@@ -40,6 +40,64 @@ export class ChatService {
       return response;
     } catch (error) {
       Logger.error(`ChatService | Error creating streaming chat completion: ${(error as Error).message}`);
+      throw error;
+    }
+  }
+
+  static async createStreamingResponse(
+    request: ChatCompletionRequest,
+    controller: any
+  ): Promise<void> {
+    try {
+      Logger.info(`ChatService | Creating streaming response`);
+      
+      const messages: MessageContent[] = [{ role: 'user', content: request.prompt }];
+      
+      const provider = this.providerFactory.createProvider(request.provider);
+      const { prompt: streamPrompt, ...streamRest } = request;
+      
+      await provider.createStreamingResponse({ ...streamRest, messages }, (chunk: string) => {
+        const data = {
+          content: chunk,
+          finish_reason: null,
+          usage: null
+        };
+        
+        const encoder = new TextEncoder();
+        const formattedChunk = `data: ${JSON.stringify(data)}\n\n`;
+        controller.enqueue(encoder.encode(formattedChunk));
+      });
+
+      // Send final chunk with finish_reason
+      const finalData = {
+        content: '',
+        finish_reason: 'stop',
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0
+        }
+      };
+      
+      const encoder = new TextEncoder();
+      const finalChunk = `data: ${JSON.stringify(finalData)}\n\ndata: [DONE]\n\n`;
+      controller.enqueue(encoder.encode(finalChunk));
+      
+      Logger.info(`ChatService | Streaming response finished`);
+    } catch (error) {
+      Logger.error(`ChatService | Error creating streaming response: ${(error as Error).message}`);
+      
+      // Send error to client
+      const errorData = {
+        content: '',
+        finish_reason: 'error',
+        usage: null
+      };
+      
+      const encoder = new TextEncoder();
+      const errorChunk = `data: ${JSON.stringify(errorData)}\n\ndata: [DONE]\n\n`;
+      controller.enqueue(encoder.encode(errorChunk));
+      
       throw error;
     }
   }
