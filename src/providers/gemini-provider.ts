@@ -20,11 +20,11 @@ export class GeminiProvider implements IAIProvider {
 
   async createCompletion(request: Omit<ChatCompletionRequest, 'prompt'> & { messages: MessageContent[] }): Promise<ChatCompletionResponse> {
     try {
-      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || 'gemini-2.0-flash-exp'}`);
+      Logger.info(`${this.getProviderName()} | Creating completion with model: ${request.model || 'gemini-2.5-pro'}`);
       
       const completion = await this.client.chat.completions.create({
         messages: this.formatMessages(request.messages),
-        model: request.model || 'gemini-2.0-flash-exp',
+        model: request.model || 'gemini-2.5-pro',
         temperature: request.temperature || AppConfig.API.DEFAULT_TEMPERATURE,
         max_tokens: request.max_tokens || AppConfig.API.DEFAULT_MAX_TOKENS,
         stream: request.stream,
