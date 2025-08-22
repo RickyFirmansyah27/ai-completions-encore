@@ -7,6 +7,7 @@ export class AppConfig {
     GROQ_API_KEY: EnvLoader.get('GROQ_API_KEY'),
     OPENROUTER_API_KEY: EnvLoader.get('OPENROUTER_API_KEY'),
     GEMINI_API_KEY: EnvLoader.get('GEMINI_API_KEY'),
+    CHUTES_API_TOKEN: EnvLoader.get('CHUTES_API_TOKEN'),
 
     DEFAULT_TEMPERATURE: parseFloat(EnvLoader.get('DEFAULT_TEMPERATURE', '0.7')),
     DEFAULT_MAX_TOKENS: parseInt(EnvLoader.get('DEFAULT_MAX_TOKENS', '4000'), 10),
@@ -44,7 +45,7 @@ export class AppConfig {
 
    
   static validate(): void {
-    if (!this.API.GROQ_API_KEY && !this.API.OPENROUTER_API_KEY && !this.API.GEMINI_API_KEY) {
+    if (!this.API.GROQ_API_KEY && !this.API.OPENROUTER_API_KEY && !this.API.GEMINI_API_KEY && !this.API.CHUTES_API_TOKEN) {
       throw new Error(this.ERRORS.MISSING_API_KEY);
     }
   }

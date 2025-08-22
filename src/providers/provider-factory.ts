@@ -3,6 +3,7 @@ import { GroqProvider } from './groq-provider';
 import { OpenRouterProvider } from './openrouter-provider';
 import { GeminiProvider } from './gemini-provider';
 import { AtlasProvider } from './atlas-provider';
+import { ChutesProvider } from './chutes-provider';
 import { Logger } from '../utils/logger';
 
  
@@ -43,6 +44,8 @@ export class ProviderFactory {
         return this.createGeminiProvider();
       case 'atlas':
         return this.createAtlasProvider();
+      case 'chutes':
+        return this.createChutesProvider();
       default:
         Logger.warn(`Unsupported provider: ${providerName}. Defaulting to Groq.`);
         return this.createGroqProvider();
@@ -98,6 +101,18 @@ export class ProviderFactory {
   }
 
     
+  private createChutesProvider(): IAIProvider {
+    const provider = new ChutesProvider();
+    
+    if (!provider.validateConfig()) {
+      throw new Error('Chutes provider configuration is invalid');
+    }
+    
+    Logger.info(`ProviderFactory | Created provider: ${provider.getProviderName()}`);
+    return provider;
+  }
+
+    
   validateCurrentProvider(): boolean {
     const provider = this.createProvider();
     return provider.validateConfig();
@@ -105,6 +120,6 @@ export class ProviderFactory {
 
     
   getAvailableProviders(): string[] {
-    return ['groq', 'openrouter', 'gemini', 'atlas'];
+    return ['groq', 'openrouter', 'gemini', 'atlas', 'chutes'];
   }
 }

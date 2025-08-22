@@ -108,7 +108,8 @@ export class ChatService {
       // Validate that at least one API key is configured
       const hasApiKeys = !!(AppConfig.API.GROQ_API_KEY ||
                            AppConfig.API.OPENROUTER_API_KEY ||
-                           AppConfig.API.GEMINI_API_KEY);
+                           AppConfig.API.GEMINI_API_KEY ||
+                           AppConfig.API.CHUTES_API_TOKEN);
       
       if (!hasApiKeys) {
         Logger.error('ChatService | No API keys configured');

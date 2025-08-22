@@ -11,7 +11,7 @@ export interface ChatCompletionRequest {
   temperature?: number;
   max_tokens?: number;
   stream?: boolean;
-  provider?: 'groq' | 'openrouter' | 'gemini' | 'atlas';
+  provider?: 'groq' | 'openrouter' | 'gemini' | 'atlas' | 'chutes';
 }
 
 export interface ChatCompletionResponse {
