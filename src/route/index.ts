@@ -1,9 +1,16 @@
 import { api } from "encore.dev/api";
+import { secret } from "encore.dev/config";
 import { ChatController } from "../controller/chat-controller";
-import { ChatService } from "../service/chat-service";
 import { ChatCompletionRequest } from "../model/chat";
 import { ResponseData } from "../utils/base-response";
 import { Logger } from "../utils/logger";
+
+export const GROQ = secret("GROQ_API_KEY");
+export const OPENROUTER = secret("OPENROUTER_API_KEY");
+export const GEMINI = secret("GEMINI_API_KEY");
+export const ATLASCLOUD = secret("ATLASCLOUD_API_KEY");
+export const CHUTES = secret("CHUTES_API_KEY");
+
 
 export const chatCompletion = api(
   {

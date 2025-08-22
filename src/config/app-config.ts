@@ -1,13 +1,14 @@
 import { EnvLoader } from './env-loader';
-
+import { GROQ, OPENROUTER, GEMINI, CHUTES, ATLASCLOUD} from '../route';
  
 export class AppConfig {
   // API Configuration
   static readonly API = {
-    GROQ_API_KEY: EnvLoader.get('GROQ_API_KEY'),
-    OPENROUTER_API_KEY: EnvLoader.get('OPENROUTER_API_KEY'),
-    GEMINI_API_KEY: EnvLoader.get('GEMINI_API_KEY'),
-    CHUTES_API_KEY: EnvLoader.get('CHUTES_API_KEY'),
+    GROQ_API_KEY: String(GROQ) || EnvLoader.get('GROQ_API_KEY'),
+    OPENROUTER_API_KEY: String(OPENROUTER) || EnvLoader.get('OPENROUTER_API_KEY'),
+    GEMINI_API_KEY: String(GEMINI) || EnvLoader.get('GEMINI_API_KEY'),
+    CHUTES_API_KEY: String(CHUTES) || EnvLoader.get('CHUTES_API_KEY'),
+    ATLASCLOUD_API_KEY: String(ATLASCLOUD) || EnvLoader.get('ATLASCLOUD_API_KEY'),
 
     DEFAULT_TEMPERATURE: parseFloat(EnvLoader.get('DEFAULT_TEMPERATURE', '0.7')),
     DEFAULT_MAX_TOKENS: parseInt(EnvLoader.get('DEFAULT_MAX_TOKENS', '4000'), 10),
@@ -45,8 +46,8 @@ export class AppConfig {
 
    
   static validate(): void {
-    if (!this.API.GROQ_API_KEY && !this.API.OPENROUTER_API_KEY && !this.API.GEMINI_API_KEY && !this.API.CHUTES_API_KEY) {
-      throw new Error(this.ERRORS.MISSING_API_KEY);
-    }
-  }
+   if (!this.API.GROQ_API_KEY && !this.API.OPENROUTER_API_KEY && !this.API.GEMINI_API_KEY && !this.API.CHUTES_API_KEY && !this.API.ATLASCLOUD_API_KEY) {
+     throw new Error(this.ERRORS.MISSING_API_KEY);
+   }
+ }
 }
