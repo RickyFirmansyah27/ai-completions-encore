@@ -9,7 +9,7 @@ export class ChutesProvider implements IAIProvider {
 
   constructor() {
     this.client = new OpenAI({
-      apiKey: AppConfig.API.CHUTES_API_TOKEN,
+      apiKey: AppConfig.API.CHUTES_API_KEY,
       baseURL: 'https://llm.chutes.ai/v1',
       defaultHeaders: {
         'HTTP-Referer': 'https://imaginary.site', // Replace with your actual app URL
@@ -106,7 +106,7 @@ export class ChutesProvider implements IAIProvider {
   }
 
   validateConfig(): boolean {
-    return !!AppConfig.API.CHUTES_API_TOKEN;
+    return !!AppConfig.API.CHUTES_API_KEY;
   }
 
   getProviderName(): string {
