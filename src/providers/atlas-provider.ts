@@ -3,14 +3,13 @@ import { IAIProvider } from './ai-provider.interface';
 import { ChatCompletionRequest, ChatCompletionResponse, MessageContent } from '../model/chat';
 import { AppConfig } from '../config/app-config';
 import { Logger } from '../utils/logger';
-import { EnvLoader } from '../config/env-loader';
 
 export class AtlasProvider implements IAIProvider {
   private client: OpenAI;
 
   constructor() {
     this.client = new OpenAI({
-      apiKey: EnvLoader.get('ATLASCLOUD_API_KEY', ''),
+      apiKey: AppConfig.API.ATLASCLOUD_API_KEY,
       baseURL: 'https://api.atlascloud.ai/v1',
     });
   }
@@ -90,7 +89,7 @@ export class AtlasProvider implements IAIProvider {
   }
 
   validateConfig(): boolean {
-    return !!EnvLoader.get('ATLASCLOUD_API_KEY', '');
+    return !!AppConfig.API.ATLASCLOUD_API_KEY;
   }
 
   getProviderName(): string {
