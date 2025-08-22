@@ -1,19 +1,40 @@
 import { EnvLoader } from './env-loader';
-import { GROQ, OPENROUTER, GEMINI, CHUTES, ATLASCLOUD} from '../route';
- 
+
 export class AppConfig {
   // API Configuration
-  static readonly API = {
-    GROQ_API_KEY: String(GROQ) || EnvLoader.get('GROQ_API_KEY'),
-    OPENROUTER_API_KEY: String(OPENROUTER) || EnvLoader.get('OPENROUTER_API_KEY'),
-    GEMINI_API_KEY: String(GEMINI) || EnvLoader.get('GEMINI_API_KEY'),
-    CHUTES_API_KEY: String(CHUTES) || EnvLoader.get('CHUTES_API_KEY'),
-    ATLASCLOUD_API_KEY: String(ATLASCLOUD) || EnvLoader.get('ATLASCLOUD_API_KEY'),
+  private static _apiKeys = {
+    GROQ_API_KEY: '',
+    OPENROUTER_API_KEY: '',
+    GEMINI_API_KEY: '',
+    CHUTES_API_KEY: '',
+    ATLASCLOUD_API_KEY: '',
+  };
 
+  static readonly API = {
+    get GROQ_API_KEY() { return AppConfig._apiKeys.GROQ_API_KEY || EnvLoader.get('GROQ_API_KEY'); },
+    get OPENROUTER_API_KEY() { return AppConfig._apiKeys.OPENROUTER_API_KEY || EnvLoader.get('OPENROUTER_API_KEY'); },
+    get GEMINI_API_KEY() { return AppConfig._apiKeys.GEMINI_API_KEY || EnvLoader.get('GEMINI_API_KEY'); },
+    get CHUTES_API_KEY() { return AppConfig._apiKeys.CHUTES_API_KEY || EnvLoader.get('CHUTES_API_KEY'); },
+    get ATLASCLOUD_API_KEY() { return AppConfig._apiKeys.ATLASCLOUD_API_KEY || EnvLoader.get('ATLASCLOUD_API_KEY'); },
+    
     DEFAULT_TEMPERATURE: parseFloat(EnvLoader.get('DEFAULT_TEMPERATURE', '0.7')),
     DEFAULT_MAX_TOKENS: parseInt(EnvLoader.get('DEFAULT_MAX_TOKENS', '4000'), 10),
     DEFAULT_ROLE: 'user' as 'user' | 'assistant' | 'system',
   } as const;
+
+  static setApiKeys(keys: {
+    GROQ_API_KEY?: string;
+    OPENROUTER_API_KEY?: string;
+    GEMINI_API_KEY?: string;
+    CHUTES_API_KEY?: string;
+    ATLASCLOUD_API_KEY?: string;
+  }) {
+    if (keys.GROQ_API_KEY) AppConfig._apiKeys.GROQ_API_KEY = keys.GROQ_API_KEY;
+    if (keys.OPENROUTER_API_KEY) AppConfig._apiKeys.OPENROUTER_API_KEY = keys.OPENROUTER_API_KEY;
+    if (keys.GEMINI_API_KEY) AppConfig._apiKeys.GEMINI_API_KEY = keys.GEMINI_API_KEY;
+    if (keys.CHUTES_API_KEY) AppConfig._apiKeys.CHUTES_API_KEY = keys.CHUTES_API_KEY;
+    if (keys.ATLASCLOUD_API_KEY) AppConfig._apiKeys.ATLASCLOUD_API_KEY = keys.ATLASCLOUD_API_KEY;
+  }
 
   // Validation Rules
   static readonly VALIDATION = {
